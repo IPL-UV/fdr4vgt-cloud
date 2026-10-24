@@ -28,7 +28,7 @@ Install the inference dependencies:
 pip install mlstac==0.4.9 rasterio "torch>=2.7.0" "segmentation-models-pytorch>=0.5.0"
 ```
 
-Run inference on the sample image hosted on Hugging Face:
+Run inference on the public Proba-V sample hosted on Hugging Face:
 
 ```python
 import mlstac
@@ -45,13 +45,17 @@ model = downloaded.compiled_model(device="cpu")
 
 # Download the sample GeoTIFF (4 bands, EPSG:4326).
 sample_path = hf_hub_download(
-    repo_id="isp-uv-es/FDR4VGT-CLOUD",
-    filename="ensemble/rgb.tif",
+    repo_id="isp-uv-es/ProbaV-SPOT",
+    filename="PROBAV_L2A_20141111_184634_2_1KM_V201.tif",
+    repo_type="dataset",
 )
 
 # Read a 512x512 crop and predict.
+# Proba-V L2A radiometry stores bands as RED, NIR, BLUE, SWIR;
+# reorder to the model input Blue, Red, NIR, SWIR.
 with rio.open(sample_path) as src:
-    image = src.read(window=rio.windows.Window(0, 0, 512, 512))
+    image = src.read(window=rio.windows.Window(768, 1536, 512, 512))
+image = image[[2, 0, 1, 3]]
 
 image_t = torch.from_numpy(image).float().unsqueeze(0)
 with torch.no_grad():

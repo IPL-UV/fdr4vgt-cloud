@@ -1,13 +1,9 @@
 #!/usr/bin/env python
 """Quick start figure for the FDR4VGT-CLOUD release.
 
-Runs the operational single model on a 512 x 512 crop of a held out
-SPOT-VGT scene and draws three panels: the reflectance composite, the
-cloud probability and the binary mask at threshold 0.5.
-
-The model and the example scene are read from the local release
-folders when they exist. Otherwise the script falls back to the
-published files on Hugging Face.
+Runs the operational single model on a 512 x 512 crop of the public
+Proba-V sample scene and draws three panels: the reflectance composite,
+the cloud probability and the binary mask at threshold 0.5.
 
 Run from the repository root:
 
@@ -15,8 +11,6 @@ Run from the repository root:
 
 Environment variables:
 
-    FDR4VGT_DATA        folder with the scene subfolders (rgb.tif,
-                        human_mask.tif)
     FDR4VGT_MODEL_JSON  mlstac JSON of the single model
 """
 
@@ -42,20 +36,14 @@ from matplotlib.ticker import FormatStrFormatter
 HERE = pathlib.Path(__file__).resolve().parent
 OUTPUT = HERE / "quickstart_prediction.png"
 
-# Held out test scene of the FDR4VGT-CLOUD test split.
-SCENE = "V2KRNP____20121111F149_V003"
-SCENE_DATE = "11 November 2012"
-CROP_ROW = 4096
-CROP_COL = 2048
+# Public Proba-V sample hosted on Hugging Face.
+SAMPLE_REPO = "isp-uv-es/ProbaV-SPOT"
+SAMPLE_FILE = "PROBAV_L2A_20141111_184634_2_1KM_V201.tif"
+CROP_ROW = 1536
+CROP_COL = 768
 CROP_SIZE = 512
 THRESHOLD = 0.5
 
-DATA_ROOT = pathlib.Path(
-    os.environ.get(
-        "FDR4VGT_DATA",
-        "/data/users/julio/experiments/cloud-proba-spot/release/data/cog",
-    )
-)
 MODEL_JSON = pathlib.Path(
     os.environ.get(
         "FDR4VGT_MODEL_JSON",
@@ -117,26 +105,22 @@ def _cuda_available() -> bool:
 
 
 def read_crop() -> tuple[np.ndarray, str]:
-    """Read the four band crop and the label of the scene it comes from.
-
-    Uses a local scene when available; otherwise falls back to the sample
-    image hosted on Hugging Face, cropped to a window with valid data.
-    """
-    path = DATA_ROOT / SCENE / "rgb.tif"
-    if path.exists():
-        window = rasterio.windows.Window(CROP_COL, CROP_ROW, CROP_SIZE, CROP_SIZE)
-        with rasterio.open(path) as src:
-            return src.read(window=window), f"SPOT-VGT scene of {SCENE_DATE}"
-
+    """Read the four band crop from the public Proba-V sample."""
     from huggingface_hub import hf_hub_download
 
     sample = hf_hub_download(
-        repo_id="isp-uv-es/FDR4VGT-CLOUD",
-        filename="ensemble/rgb.tif",
+        repo_id=SAMPLE_REPO,
+        filename=SAMPLE_FILE,
+        repo_type="dataset",
     )
-    window = rasterio.windows.Window(2560, 1536, CROP_SIZE, CROP_SIZE)
+    window = rasterio.windows.Window(CROP_COL, CROP_ROW, CROP_SIZE, CROP_SIZE)
     with rasterio.open(sample) as src:
-        return src.read(window=window), "Proba-V sample scene from Hugging Face"
+        image = src.read(window=window)
+
+    # Proba-V L2A radiometry stores bands as RED, NIR, BLUE, SWIR.
+    # Reorder to the model input: Blue, Red, NIR, SWIR.
+    image = image[[2, 0, 1, 3]]
+    return image, "Proba-V scene PROBAV_L2A_20141111_184634_2_1KM_V201"
 
 
 def _srgb(values: np.ndarray) -> np.ndarray:
@@ -256,7 +240,7 @@ def main() -> None:
     draw(image, prob, OUTPUT, scene_label)
 
     cover = float((prob > THRESHOLD).mean())
-    print(f"scene {SCENE} crop {CROP_ROW},{CROP_COL} {CROP_SIZE} px on {device}")
+    print(f"{SAMPLE_FILE} crop {CROP_ROW},{CROP_COL} {CROP_SIZE} px on {device}")
     print(f"cloud cover at {THRESHOLD:g}: {cover:.3f}")
     print(f"wrote {OUTPUT}")
 

@@ -13,10 +13,9 @@ This is **DeepLabV3**, not DeepLabV3+.
 
 ## Exported artifacts
 
-The model repository contains 24 `.pt2` files and 29 JSON files:
+The model repository contains 23 `.pt2` files and 28 JSON files:
 
 - `single/model.pt2`: operational single model.
-- `ensemble/model.pt2`: ensemble of 6 fine-tuned models; returns `(probability, uncertainty)`.
 - `ablation/`: 22 additional models for the ablation study.
 
 All exports use torch 2.7.0, dynamic batch size from 1 to 256, and include the sigmoid.
