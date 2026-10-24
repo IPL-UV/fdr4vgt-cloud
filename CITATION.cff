@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use the code or split metadata from this repository, please cite it as below. Images, human masks, point labels, and built TACO archives are not redistributed here; they remain under the terms of their original providers."
+title: "FDR4VGT-CLOUD: Cloud detection for Proba-V and SPOT-VGT"
+version: 1.0.0
+date-released: 2026-10-24
+url: "https://github.com/IPL-UV/fdr4vgt-cloud"
+repository-code: "https://github.com/IPL-UV/fdr4vgt-cloud"
+license: MIT
+authors:
+  - family-names: "Contreras"
+    given-names: "Julio"
+    affiliation: "Image Processing Laboratory (IPL-UV), Universitat de València"
+preferred-citation:
+  type: article
+  title: "FDR4VGT-CLOUD: Cloud detection for Proba-V and SPOT-VGT"
+  authors:
+    - family-names: "Contreras"
+      given-names: "Julio"
+      affiliation: "Image Processing Laboratory (IPL-UV), Universitat de València"
+  year: 2026
+  journal: "TODO: update after acceptance"
+  volume: "TODO"
+  issue: "TODO"
+  pages: "TODO"
+  doi: "10.5281/zenodo.TODO"

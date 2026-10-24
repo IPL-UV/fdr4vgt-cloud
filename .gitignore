@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+*.egg
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+.venv*/
+venv/
+venv25/
+.venv-release/
+.venv-torch214/
+
+# Local tests and staging (not published)
+local_tests/
+staging/
+*.log
+
+# Large/binary artifacts not tracked in git
+*.tif
+*.tiff
+*.tacozip
+*.tacocat/
+*.tortilla
+*.pt2
+*.ckpt
+*.pt
+*.npy
+*.safetensor*
+*.h5
+*.hdf5
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Data
+*.parquet
+*.csv
+!splits/*.csv
+!configs/*.yaml
+!configs/*.yml

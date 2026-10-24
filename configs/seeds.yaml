@@ -1,0 +1,10 @@
+# Reproducibility seeds used across the release pipeline.
+pretrain_split_seed: 42
+finetune_split_seed: 42
+pytorch_global_seed: 42
+rasterio_aws_random_seed: 42
+
+# Data split ratios.
+pretrain_val_size: 0.1
+pretrain_test_size: 0.1
+finetune_val_size: 0.15

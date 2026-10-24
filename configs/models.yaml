@@ -1,0 +1,63 @@
+# Model configurations for the ablation study.
+# All models take 4-band TOA reflectance as input and output a single
+# cloud probability logit.
+
+1dpwdeeplabv3:
+  class: CombinedNet4
+  encoder: mobilenet_v2
+  in_channels: 4
+  classes: 1
+  base_channels: 32
+  description: Operational model. DeepLabV3 + pixel-wise 1x1 MLP + fusion.
+
+1dpwunet:
+  class: CombinedNet2
+  encoder: mobilenet_v2
+  in_channels: 4
+  classes: 1
+  base_channels: 32
+  description: UNet + pixel-wise 1x1 MLP + fusion.
+
+1dpwunetpp:
+  class: CombinedNet3
+  encoder: mobilenet_v2
+  in_channels: 4
+  classes: 1
+  base_channels: 32
+  description: UNet++ + pixel-wise 1x1 MLP + fusion.
+
+1dpwseg:
+  class: CombinedNet
+  encoder: mobilenet_v2
+  in_channels: 4
+  classes: 1
+  base_channels: 32
+  description: Segformer + pixel-wise 1x1 MLP + fusion.
+
+deeplabv3:
+  class: DeepLabV3Branch
+  encoder: mobilenet_v2
+  in_channels: 4
+  classes: 1
+  description: DeepLabV3 only.
+
+unet:
+  class: UNetBranch
+  encoder: mobilenet_v2
+  in_channels: 4
+  classes: 1
+  description: UNet only.
+
+unetpp:
+  class: UNetPlusPlusBranch
+  encoder: mobilenet_v2
+  in_channels: 4
+  classes: 1
+  description: UNet++ only.
+
+segformer:
+  class: SegformerBranch
+  encoder: mobilenet_v2
+  in_channels: 4
+  classes: 1
+  description: Segformer only.
