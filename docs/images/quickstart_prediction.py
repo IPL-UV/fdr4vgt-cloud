@@ -116,17 +116,17 @@ def _cuda_available() -> bool:
     return torch.cuda.is_available()
 
 
-def read_crop() -> np.ndarray:
-    """Read the four band crop used for the figure.
+def read_crop() -> tuple[np.ndarray, str]:
+    """Read the four band crop and the label of the scene it comes from.
 
     Uses a local scene when available; otherwise falls back to the sample
-    image hosted on Hugging Face.
+    image hosted on Hugging Face, cropped to a window with valid data.
     """
     path = DATA_ROOT / SCENE / "rgb.tif"
     if path.exists():
         window = rasterio.windows.Window(CROP_COL, CROP_ROW, CROP_SIZE, CROP_SIZE)
         with rasterio.open(path) as src:
-            return src.read(window=window)
+            return src.read(window=window), f"SPOT-VGT scene of {SCENE_DATE}"
 
     from huggingface_hub import hf_hub_download
 
@@ -134,9 +134,9 @@ def read_crop() -> np.ndarray:
         repo_id="isp-uv-es/FDR4VGT-CLOUD",
         filename="ensemble/rgb.tif",
     )
-    window = rasterio.windows.Window(0, 0, CROP_SIZE, CROP_SIZE)
+    window = rasterio.windows.Window(2560, 1536, CROP_SIZE, CROP_SIZE)
     with rasterio.open(sample) as src:
-        return src.read(window=window)
+        return src.read(window=window), "Proba-V sample scene from Hugging Face"
 
 
 def _srgb(values: np.ndarray) -> np.ndarray:
@@ -165,7 +165,7 @@ def composite(image: np.ndarray) -> np.ndarray:
 # ---------------------------------------------------------------------------
 
 
-def draw(image: np.ndarray, prob: np.ndarray, output: pathlib.Path) -> None:
+def draw(image: np.ndarray, prob: np.ndarray, output: pathlib.Path, scene_label: str) -> None:
     rgb = composite(image)
     mask = (prob > THRESHOLD).astype(np.uint8)
 
@@ -191,7 +191,7 @@ def draw(image: np.ndarray, prob: np.ndarray, output: pathlib.Path) -> None:
 
     fig.suptitle("Cloud detection with the FDR4VGT-CLOUD single model", fontsize=12.5)
     fig.supxlabel(
-        f"SPOT-VGT scene of {SCENE_DATE}, {CROP_SIZE} x {CROP_SIZE} crop, "
+        f"{scene_label}, {CROP_SIZE} × {CROP_SIZE} crop, "
         f"probability and mask from mlstac 0.4.9. Dark blue marks cloud.",
         fontsize=8,
         color="#4d4d4d",
@@ -220,7 +220,7 @@ def draw(image: np.ndarray, prob: np.ndarray, output: pathlib.Path) -> None:
     cbar.set_ticks([0.0, 0.5, 1.0])
     cbar.ax.xaxis.set_major_formatter(FormatStrFormatter("%.1f"))
     cbar.ax.tick_params(
-        labelsize=7.5,
+        labelsize=8,
         length=2,
         width=0.6,
         color="#9a9a9a",
@@ -241,7 +241,7 @@ def draw(image: np.ndarray, prob: np.ndarray, output: pathlib.Path) -> None:
 
 def main() -> None:
     loader, net, device = load_model()
-    image = read_crop()
+    image, scene_label = read_crop()
     prob = loader.predict_large(
         image=image,
         model=net,
@@ -253,7 +253,7 @@ def main() -> None:
     prob = np.squeeze(prob).astype(np.float32)
 
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    draw(image, prob, OUTPUT)
+    draw(image, prob, OUTPUT, scene_label)
 
     cover = float((prob > THRESHOLD).mean())
     print(f"scene {SCENE} crop {CROP_ROW},{CROP_COL} {CROP_SIZE} px on {device}")
