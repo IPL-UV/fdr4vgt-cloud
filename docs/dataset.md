@@ -4,8 +4,8 @@
 
 This repository provides:
 
-- `splits/` -- train/val/test assignments for the 117 pixel scenes and 49 point scenes.
-- `src/fdr4vgt_cloud/taco_schema.py` -- canonical column names, PyArrow types and descriptions.
+- `splits/`: train/val/test assignments for the 117 pixel scenes and 49 point scenes.
+- `src/fdr4vgt_cloud/taco_schema.py`: canonical column names, PyArrow types and descriptions.
 - Pipeline scripts that build the full TACO archive from locally available source data.
 
 The actual images, masks, point labels, and built TACO archives are **not included** in this repository and are **not redistributed** here.
@@ -47,7 +47,7 @@ Point scenes contain `points.parquet` instead of `mask.tif`.
 
 1. The 0.5 threshold is the one reported in the paper. A multi-metric threshold of 0.4848 was computed on the original 89-scene test set but is not recommended for general use.
 2. Eight SPOT scenes were added to the test set after the initial split and share product-level overlap with training crops. The `qa:product_leak` column flags these cases.
-3. Weak pretraining counts should be verified with `pipeline/43_check_pretrain_split.py` before being reported.
+3. Weak pretraining counts should be verified with `pipeline/13_check_pretrain_split.py` before being reported.
 
 ## Licenses
 

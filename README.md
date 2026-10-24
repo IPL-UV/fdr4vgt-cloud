@@ -2,16 +2,16 @@
 
 Cloud detection for Proba-V and SPOT-VGT imagery.
 
-This repository contains the code, model definitions, training scripts, evaluation tools, and split metadata for the FDR4VGT-CLOUD release. Raw reflectance rasters, human-annotated masks, and point validation data are **not included** in this repository.
+Code, model definitions, training scripts, evaluation tools, and split metadata for the FDR4VGT-CLOUD release. Raw reflectance rasters, human-annotated masks, and point validation data are **not included**.
 
 ## What is included
 
-- `src/fdr4vgt_cloud/` -- model, inference, metrics, COG helpers, training code.
-- `pipeline/` -- numbered scripts that reproduce the release from source data.
-- `splits/` -- train/val/test assignments for the 117 pixel scenes and 49 point scenes.
-- `configs/` -- seeds, model definitions and training hyperparameters.
-- `notebooks/01_quickstart.ipynb` -- getting-started notebook.
-- `hf_model/` -- placeholder structure for the Hugging Face model repository.
+- `src/fdr4vgt_cloud/`: model, inference, metrics, COG helpers, training code.
+- `pipeline/`: numbered scripts that reproduce the release from source data.
+- `splits/`: train/val/test assignments for the 117 pixel scenes and 49 point scenes.
+- `configs/`: seeds, model definitions and training hyperparameters.
+- `notebooks/01_quickstart.ipynb`: getting-started notebook.
+- `hf_model/`: placeholder structure for the Hugging Face model repository.
 
 ## What is **not** included
 
@@ -83,10 +83,10 @@ The recommended threshold is **0.5**.
 |---|---|
 | Code in this repository | MIT |
 | Splits and metadata (`splits/`, `docs/`) | CC-BY-4.0 |
-| Proba-V L2A images | ESA / VITO -- [Terrascope](https://terrascope.be) terms and Copernicus data policy |
-| SPOT-VGT images | CNES / VITO / ESA -- [Terrascope](https://terrascope.be) terms and Copernicus data policy |
-| Human pixel masks | ESA Phi-lab Round Robin exercise -- not redistributed here |
-| Point validation set | Brockmann Consult Proba-V-C2-CloudValidation -- not redistributed here |
+| Proba-V L2A images | ESA / VITO; [Terrascope](https://terrascope.be) terms and Copernicus data policy |
+| SPOT-VGT images | CNES / VITO / ESA; [Terrascope](https://terrascope.be) terms and Copernicus data policy |
+| Human pixel masks | ESA Phi-lab Round Robin exercise; not redistributed here |
+| Point validation set | Brockmann Consult Proba-V-C2-CloudValidation; not redistributed here |
 | Model weights and TACO archives | Built locally; not hosted in this repository |
 
 Images, masks, and point labels are **not CC-BY**. Obtain them directly from the original providers.
@@ -96,26 +96,48 @@ Images, masks, and point labels are **not CC-BY**. Obtain them directly from the
 Run the pipeline modules in order:
 
 ```bash
-pipeline/10_inventory.py
-pipeline/11_splits.py
-pipeline/12_metadata.py
-pipeline/20_cog.py
-pipeline/21_verify_cog.py
-pipeline/30_build_taco.py
-pipeline/31_fix_tacocat_order.py
-pipeline/32_docs.py
-pipeline/33_verify_taco.py
-pipeline/40_export_pt2.py
-pipeline/41_verify_pt2.py
-pipeline/42_update_mlm_json.py
-pipeline/43_check_pretrain_split.py
+pipeline/01_inventory.py
+pipeline/02_splits.py
+pipeline/03_metadata.py
+pipeline/04_cog.py
+pipeline/05_verify_cog.py
+pipeline/06_build_taco.py
+pipeline/07_fix_tacocat_order.py
+pipeline/08_docs.py
+pipeline/09_verify_taco.py
+pipeline/10_export_pt2.py
+pipeline/11_verify_pt2.py
+pipeline/12_update_mlm_json.py
+pipeline/13_check_pretrain_split.py
 ```
 
-Publication steps (50-52) are run manually after the G0 gates are approved.
+Publication steps (14-16) are run manually after the G0 gates are approved.
 
 ## Citation
 
-See `CITATION.cff`.
+If you use the model or dataset, please cite:
+
+```bibtex
+@misc{contreras2026fdr4vgtcloud_model,
+  title={FDR4VGT-CLOUD: Cloud detection for Proba-V and SPOT-VGT},
+  author={Contreras, Julio and Aybar, Cesar and Gomez-Chova, Luis},
+  year={2026},
+  url={https://huggingface.co/isp-uv-es/FDR4VGT-CLOUD},
+  note={Paper submitted to IEEE GRSL}
+}
+```
+
+```bibtex
+@misc{contreras2026fdr4vgtcloud_dataset,
+  title={ProbaV-SPOT: FDR4VGT-CLOUD dataset},
+  author={Contreras, Julio and Aybar, Cesar and Gomez-Chova, Luis},
+  year={2026},
+  url={https://huggingface.co/datasets/isp-uv-es/ProbaV-SPOT},
+  note={Paper submitted to IEEE GRSL}
+}
+```
+
+See also `CITATION.cff`.
 
 ## Acknowledgements
 

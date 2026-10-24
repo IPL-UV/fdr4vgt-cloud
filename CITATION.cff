@@ -10,6 +10,12 @@ authors:
   - family-names: "Contreras"
     given-names: "Julio"
     affiliation: "Image Processing Laboratory (IPL-UV), Universitat de València"
+  - family-names: "Aybar"
+    given-names: "Cesar"
+    affiliation: "Image Processing Laboratory (IPL-UV), Universitat de València"
+  - family-names: "Gomez-Chova"
+    given-names: "Luis"
+    affiliation: "Image Processing Laboratory (IPL-UV), Universitat de València"
 preferred-citation:
   type: article
   title: "FDR4VGT-CLOUD: Cloud detection for Proba-V and SPOT-VGT"
@@ -17,9 +23,34 @@ preferred-citation:
     - family-names: "Contreras"
       given-names: "Julio"
       affiliation: "Image Processing Laboratory (IPL-UV), Universitat de València"
+    - family-names: "Aybar"
+      given-names: "Cesar"
+      affiliation: "Image Processing Laboratory (IPL-UV), Universitat de València"
+    - family-names: "Gomez-Chova"
+      given-names: "Luis"
+      affiliation: "Image Processing Laboratory (IPL-UV), Universitat de València"
   year: 2026
-  journal: "TODO: update after acceptance"
-  volume: "TODO"
-  issue: "TODO"
-  pages: "TODO"
-  doi: "10.5281/zenodo.TODO"
+  journal: "IEEE Geoscience and Remote Sensing Letters"
+references:
+  - type: software
+    title: "FDR4VGT-CLOUD model"
+    authors:
+      - family-names: "Contreras"
+        given-names: "Julio"
+      - family-names: "Aybar"
+        given-names: "Cesar"
+      - family-names: "Gomez-Chova"
+        given-names: "Luis"
+    year: 2026
+    url: "https://huggingface.co/isp-uv-es/FDR4VGT-CLOUD"
+  - type: data
+    title: "ProbaV-SPOT dataset"
+    authors:
+      - family-names: "Contreras"
+        given-names: "Julio"
+      - family-names: "Aybar"
+        given-names: "Cesar"
+      - family-names: "Gomez-Chova"
+        given-names: "Luis"
+    year: 2026
+    url: "https://huggingface.co/datasets/isp-uv-es/ProbaV-SPOT"

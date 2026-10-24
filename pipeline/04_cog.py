@@ -2,7 +2,7 @@
 
 This script must be run on a machine with the source files under
 `/data/databases/Julio`. The output is written to a staging directory and
-later packaged into TACO by `30_build_taco.py`.
+later packaged into TACO by `06_build_taco.py`.
 """
 
 from __future__ import annotations

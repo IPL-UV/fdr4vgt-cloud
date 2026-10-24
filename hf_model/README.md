@@ -27,13 +27,13 @@ hf_model/
 
 Total: **24 `.pt2` files** and **29 `.mlm.json` files**.
 
-The JSON files are updated by `pipeline/42_update_mlm_json.py`.
-The `.pt2` files are exported by `pipeline/40_export_pt2.py`.
+The JSON files are updated by `pipeline/12_update_mlm_json.py`.
+The `.pt2` files are exported by `pipeline/10_export_pt2.py`.
 
 ## Model card
 
 The model card (`README.md`) for Hugging Face is generated separately and
-should mention:
+must include:
 
 - DeepLabV3 + pixel-wise MLP architecture.
 - Recommended threshold **0.5**.
