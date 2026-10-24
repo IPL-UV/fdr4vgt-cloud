@@ -6,26 +6,66 @@ This repository contains the code, model definitions, training scripts, evaluati
 
 ## What is included
 
-- `src/fdr4vgt_cloud/` — model, inference, metrics, COG helpers, training code.
-- `pipeline/` — numbered scripts that reproduce the release from source data.
-- `splits/` — train/val/test assignments for the 117 pixel scenes and 49 point scenes.
-- `configs/` — seeds, model definitions and training hyperparameters.
-- `notebooks/01_quickstart.ipynb` — getting-started notebook.
-- `hf_model/` — placeholder structure for the Hugging Face model repository.
+- `src/fdr4vgt_cloud/` -- model, inference, metrics, COG helpers, training code.
+- `pipeline/` -- numbered scripts that reproduce the release from source data.
+- `splits/` -- train/val/test assignments for the 117 pixel scenes and 49 point scenes.
+- `configs/` -- seeds, model definitions and training hyperparameters.
+- `notebooks/01_quickstart.ipynb` -- getting-started notebook.
+- `hf_model/` -- placeholder structure for the Hugging Face model repository.
 
 ## What is **not** included
 
 - Proba-V/SPOT-VGT reflectance images (download from [Terrascope](https://terrascope.be) or VITO with their own terms).
-- Human-annotated pixel masks from the ESA Φ-lab Round Robin exercise.
+- Human-annotated pixel masks from the ESA Phi-lab Round Robin exercise.
 - Point validation data from Brockmann Consult Proba-V-C2-CloudValidation.
 - Model weights and TACO archives (built locally with the pipeline scripts).
 
 ## Quick start
 
+Install the inference dependencies:
+
 ```bash
-pip install -e ".[build,notebook]"
-python -m fdr4vgt_cloud.training.finetune --help
+pip install mlstac==0.4.9 rasterio "torch>=2.7.0" "segmentation-models-pytorch>=0.5.0"
 ```
+
+Run inference on the sample image hosted on Hugging Face:
+
+```python
+import mlstac
+from huggingface_hub import hf_hub_download
+import rasterio as rio
+import torch
+
+# Load the single model from Hugging Face.
+loader = mlstac.load(
+    "https://huggingface.co/isp-uv-es/FDR4VGT-CLOUD/resolve/main/single/multisensor_single_1dpwdeeplabv3.json"
+)
+downloaded = loader.download(output_dir="fdr4vgt_model")
+model = downloaded.compiled_model(device="cpu")
+
+# Download the sample GeoTIFF (4 bands, EPSG:4326).
+sample_path = hf_hub_download(
+    repo_id="isp-uv-es/FDR4VGT-CLOUD",
+    filename="ensemble/rgb.tif",
+)
+
+# Read a 512x512 crop and predict.
+with rio.open(sample_path) as src:
+    image = src.read(window=rio.windows.Window(0, 0, 512, 512))
+
+image_t = torch.from_numpy(image).float().unsqueeze(0)
+with torch.no_grad():
+    prob = model(image_t)
+
+print(prob.shape)  # (1, 1, 512, 512)
+```
+
+For a step-by-step version see:
+
+- Notebook: [`notebooks/01_quickstart.ipynb`](notebooks/01_quickstart.ipynb)
+- Run in Colab: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IPL-UV/fdr4vgt-cloud/blob/main/notebooks/01_quickstart.ipynb)
+
+![Quick-start prediction](docs/images/quickstart_prediction.png)
 
 ## Model
 
@@ -39,10 +79,10 @@ The recommended threshold is **0.5**.
 |---|---|
 | Code in this repository | MIT |
 | Splits and metadata (`splits/`, `docs/`) | CC-BY-4.0 |
-| Proba-V L2A images | ESA / VITO — [Terrascope](https://terrascope.be) terms and Copernicus data policy |
-| SPOT-VGT images | CNES / VITO / ESA — [Terrascope](https://terrascope.be) terms and Copernicus data policy |
-| Human pixel masks | ESA Φ-lab Round Robin exercise — not redistributed here |
-| Point validation set | Brockmann Consult Proba-V-C2-CloudValidation — not redistributed here |
+| Proba-V L2A images | ESA / VITO -- [Terrascope](https://terrascope.be) terms and Copernicus data policy |
+| SPOT-VGT images | CNES / VITO / ESA -- [Terrascope](https://terrascope.be) terms and Copernicus data policy |
+| Human pixel masks | ESA Phi-lab Round Robin exercise -- not redistributed here |
+| Point validation set | Brockmann Consult Proba-V-C2-CloudValidation -- not redistributed here |
 | Model weights and TACO archives | Built locally; not hosted in this repository |
 
 Images, masks, and point labels are **not CC-BY**. Obtain them directly from the original providers.

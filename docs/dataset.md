@@ -4,8 +4,8 @@
 
 This repository provides:
 
-- `splits/` — train/val/test assignments for the 117 pixel scenes and 49 point scenes.
-- `src/fdr4vgt_cloud/taco_schema.py` — canonical column names, PyArrow types and descriptions.
+- `splits/` -- train/val/test assignments for the 117 pixel scenes and 49 point scenes.
+- `src/fdr4vgt_cloud/taco_schema.py` -- canonical column names, PyArrow types and descriptions.
 - Pipeline scripts that build the full TACO archive from locally available source data.
 
 The actual images, masks, point labels, and built TACO archives are **not included** in this repository and are **not redistributed** here.

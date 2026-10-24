@@ -20,6 +20,7 @@ venv25/
 local_tests/
 staging/
 *.log
+fdr4vgt_model/
 
 # Large/binary artifacts not tracked in git
 *.tif
