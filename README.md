@@ -125,25 +125,14 @@ Publication steps (14-16) are run manually after the G0 gates are approved.
 
 ## Citation
 
-If you use the model or dataset, please cite:
+If you use this code, the model weights or the ProbaV-SPOT sample, please cite:
 
 ```bibtex
-@misc{contreras2026fdr4vgtcloud_model,
-  title={FDR4VGT-CLOUD: Cloud detection for Proba-V and SPOT-VGT},
-  author={Contreras, Julio and Aybar, C{\'e}sar and Gomez-Chova, Luis},
-  year={2026},
-  url={https://huggingface.co/isp-uv-es/FDR4VGT-CLOUD},
-  note={Paper submitted to IEEE GRSL}
-}
-```
-
-```bibtex
-@misc{contreras2026fdr4vgtcloud_dataset,
-  title={ProbaV-SPOT: FDR4VGT-CLOUD dataset},
-  author={Contreras, Julio and Aybar, C{\'e}sar and Gomez-Chova, Luis},
-  year={2026},
-  url={https://huggingface.co/datasets/isp-uv-es/ProbaV-SPOT},
-  note={Paper submitted to IEEE GRSL}
+@article{contreras2026fdr4vgt,
+  title   = {A multisensor deep learning framework for robust cloud segmentation in SPOT-VGT and Proba-V},
+  author  = {Contreras, Julio and Aybar, C{\'e}sar and G{\'o}mez-Chova, Luis},
+  journal = {IEEE Geoscience and Remote Sensing Letters},
+  year    = {2026},
 }
 ```
 
