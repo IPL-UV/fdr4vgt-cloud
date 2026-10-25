@@ -1,8 +1,11 @@
 # FDR4VGT-CLOUD
 
+[![Hugging Face model](https://img.shields.io/badge/Hugging%20Face-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/isp-uv-es/FDR4VGT-CLOUD)
+[![Hugging Face dataset](https://img.shields.io/badge/Hugging%20Face-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/isp-uv-es/ProbaV-SPOT)
+
 Cloud detection for Proba-V and SPOT-VGT imagery.
 
-Code, model definitions, training scripts, evaluation tools, and split metadata for the FDR4VGT-CLOUD release. Raw reflectance rasters, human-annotated masks, and point validation data are **not included**.
+Code, model definitions, training scripts, evaluation tools, and split metadata for the FDR4VGT-CLOUD release. See Data availability for the input data and model weights.
 
 ## What is included
 
@@ -13,12 +16,19 @@ Code, model definitions, training scripts, evaluation tools, and split metadata 
 - `notebooks/01_quickstart.ipynb`: getting-started notebook.
 - `hf_model/`: placeholder structure for the Hugging Face model repository.
 
-## What is **not** included
+## Data availability
 
-- Proba-V/SPOT-VGT reflectance images (download from [Terrascope](https://terrascope.be) or VITO with their own terms).
-- Human-annotated pixel masks from the ESA Phi-lab Round Robin exercise.
-- Point validation data from Brockmann Consult Proba-V-C2-CloudValidation.
-- Model weights and TACO archives (built locally with the pipeline scripts).
+This repository contains code, data splits and configuration only. The input data are not redistributed and must be obtained from their providers under their own terms:
+
+| Data | Provider | Access |
+|---|---|---|
+| Proba-V / SPOT-VGT reflectance | VITO (Terrascope) | [Terrascope](https://terrascope.be) |
+| Human-annotated cloud masks | ESA Φ-lab Round Robin | available on request |
+| Point validation data | Brockmann Consult | available on request |
+| Model weights | Hugging Face | [isp-uv-es/FDR4VGT-CLOUD](https://huggingface.co/isp-uv-es/FDR4VGT-CLOUD) |
+| TACO archives | Built with `pipeline/` | not redistributed; see provider terms above |
+
+The split files in `splits/` list the product IDs needed to rebuild each set.
 
 ## Quick start
 
@@ -120,7 +130,7 @@ If you use the model or dataset, please cite:
 ```bibtex
 @misc{contreras2026fdr4vgtcloud_model,
   title={FDR4VGT-CLOUD: Cloud detection for Proba-V and SPOT-VGT},
-  author={Contreras, Julio and Aybar, Cesar and Gomez-Chova, Luis},
+  author={Contreras, Julio and Aybar, C{\'e}sar and Gomez-Chova, Luis},
   year={2026},
   url={https://huggingface.co/isp-uv-es/FDR4VGT-CLOUD},
   note={Paper submitted to IEEE GRSL}
@@ -130,7 +140,7 @@ If you use the model or dataset, please cite:
 ```bibtex
 @misc{contreras2026fdr4vgtcloud_dataset,
   title={ProbaV-SPOT: FDR4VGT-CLOUD dataset},
-  author={Contreras, Julio and Aybar, Cesar and Gomez-Chova, Luis},
+  author={Contreras, Julio and Aybar, C{\'e}sar and Gomez-Chova, Luis},
   year={2026},
   url={https://huggingface.co/datasets/isp-uv-es/ProbaV-SPOT},
   note={Paper submitted to IEEE GRSL}
