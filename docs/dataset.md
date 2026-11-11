@@ -14,6 +14,8 @@ The actual images, masks, point labels, and built TACO archives are **not includ
 
 `scenes.csv` uses the split actually used by `train_finetune.py` (`f_dataloader.py`, `random_state=42`): 66 fine-tuning train scenes (41 Proba-V, 25 SPOT-VGT) and 12 validation scenes (7 Proba-V, 5 SPOT-VGT). `split_summary.csv` reports the counts by role, sensor and year. `weak_pretrain.csv` lists the 3,647 pre-training scene IDs. `split_overlap.csv` reports scene-ID intersections and is reproduced by `pipeline/17_check_split_overlap.py`.
 
+Fine-tuning, validation and test share no scene ID, and no manual test annotation was used at any training stage. The only non-zero intersection is between `weak_pretrain.csv` and the SPOT-VGT annotated sets: 45 scenes (25 fine-tuning, 5 validation, 8 test, 7 unused), 1.2% of the pre-training scenes and 1.4% of its pixels. Those scenes entered pre-training with legacy pseudo-labels from the operational algorithm, never with the manual reference masks. Proba-V is disjoint across all roles.
+
 ## Schema
 
 The dataset is released as two TACO partitions:
