@@ -11,7 +11,7 @@ Code, model definitions, training scripts, evaluation tools, and split metadata 
 
 - `src/fdr4vgt_cloud/`: model, inference, metrics, COG helpers, training code.
 - `pipeline/`: numbered scripts that reproduce the release from source data.
-- `splits/`: train/val/test assignments for the 117 pixel scenes and 49 point scenes.
+- `splits/`: train/val/test assignments for the 117 pixel scenes and 49 point scenes, the 3,647 pre-training IDs, and the role-level summary and overlap files.
 - `configs/`: seeds, model definitions and training hyperparameters.
 - `notebooks/01_quickstart.ipynb`: getting-started notebook.
 - `hf_model/`: placeholder structure for the Hugging Face model repository.

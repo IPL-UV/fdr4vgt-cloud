@@ -4,11 +4,15 @@
 
 This repository provides:
 
-- `splits/`: train/val/test assignments for the 117 pixel scenes and 49 point scenes.
+- `splits/`: train/val/test assignments for the 117 pixel scenes and 49 point scenes, the 3,647 pre-training IDs, and the role-level summary and overlap files.
 - `src/fdr4vgt_cloud/taco_schema.py`: canonical column names, PyArrow types and descriptions.
 - Pipeline scripts that build the full TACO archive from locally available source data.
 
 The actual images, masks, point labels, and built TACO archives are **not included** in this repository and are **not redistributed** here.
+
+## Split summary
+
+`scenes.csv` uses the split actually used by `train_finetune.py` (`f_dataloader.py`, `random_state=42`): 66 fine-tuning train scenes (41 Proba-V, 25 SPOT-VGT) and 12 validation scenes (7 Proba-V, 5 SPOT-VGT). `split_summary.csv` reports the counts by role, sensor and year. `weak_pretrain.csv` lists the 3,647 pre-training scene IDs. `split_overlap.csv` reports scene-ID intersections and is reproduced by `pipeline/17_check_split_overlap.py`.
 
 ## Schema
 
