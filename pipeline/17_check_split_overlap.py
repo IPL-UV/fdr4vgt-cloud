@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """Check scene-ID overlap between the released split roles."""
+
 from pathlib import Path
 
 import pandas as pd
