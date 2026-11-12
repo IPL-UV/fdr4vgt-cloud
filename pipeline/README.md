@@ -21,6 +21,7 @@
 | `17_check_split_overlap.py` | Check that no test scene appears in fine-tuning. |
 | `18_split_geo_separation.py` | Distance between training and test scene centroids. |
 | `19_mask_uncertainty.py` | Rescore a model against four versions of the reference mask. |
+| `20_points_sampling.py` | Describe the composition of the point-based Proba-V reference. |
 
 Run the modules in order. Steps 04-05 and 10-11 require the large source
 files under `/data` and are skipped by the public CI.

@@ -19,6 +19,8 @@ Code, model definitions, training scripts, evaluation tools, and split metadata 
   per-variant scores behind the mask-uncertainty and seed-variability replies: rows are
   identified by `model`, where `seed1` and `seed2` are two repeated fine-tunes of the
   operational model with a different random seed and everything else fixed.
+  `r3_16_points_composition.csv` and `r3_17_points_balance.csv` describe the
+  point-based Proba-V reference: points per scene, class balance and dates.
 - `hf_model/`: placeholder structure for the Hugging Face model repository.
 
 ## Data availability
