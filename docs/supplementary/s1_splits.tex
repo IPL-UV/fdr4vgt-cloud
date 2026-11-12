@@ -1,0 +1,31 @@
+\begin{table}[h]
+\centering
+\caption{Scene-level split of the training and evaluation data. Roles are pre-training, fine-tuning, validation, pixel-wise test and point-based test. No-data is the fraction of pixels outside the valid area or marked no-data; it is not the clear class. The 121 Proba-V scenes are a subset of the 331 Level-2A products of the ESA Proba-V Cloud Detection Round Robin, acquired on 21 March, 21 June, 21 September and 21 December 2014. Scene IDs and the overlap check are provided at \protect\url{https://github.com/IPL-UV/fdr4vgt-cloud}.}
+\label{tab:splits}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llrrrrr}
+\hline
+Role & Sensor & Year & Scenes & Pixels & Points & No-data / outside \\
+\hline
+Pre-train & Proba-V & 2014 & 1\,387 & 19\,620\,892\,143 & -- & -- \\
+Pre-train & Proba-V & 2019 & 1\,408 & 20\,257\,544\,156 & -- & -- \\
+Pre-train & SPOT-VGT & 1999 & 414 & 6\,694\,805\,490 & -- & -- \\
+Pre-train & SPOT-VGT & 2012 & 438 & 6\,708\,212\,403 & -- & -- \\
+Fine-tune & Proba-V & 2014 & 41 & 76\,261\,744 & -- & 45.8\% \\
+Fine-tune & SPOT-VGT & 1999 & 25 & 515\,770\,988 & -- & 50.5\% \\
+Validation & Proba-V & 2014 & 7 & 12\,255\,634 & -- & 48.0\% \\
+Validation & SPOT-VGT & 1999 & 5 & 55\,265\,191 & -- & 47.0\% \\
+Test (pixel) & Proba-V & 2014 & 24 & 52\,056\,426 & -- & 46.1\% \\
+Test (pixel) & SPOT-VGT & 1999 & 2 & 22\,716\,480 & -- & 32.4\% \\
+Test (pixel) & SPOT-VGT & 2012 & 6 & 104\,009\,641 & -- & 39.7\% \\
+Test (points) & Proba-V & 2014 & 49 & -- & 7\,654 & -- \\
+Annotated, not used & SPOT-VGT & 1999 & 7 & 73\,816\,702 & -- & 43.0\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{flushleft}
+\small
+Fine-tuning, validation and test share no scene ID, and no manual test annotation was used at any training stage. Pre-training includes 45 of the 166 annotated scenes, all SPOT-VGT: 25 fine-tuning, 5 validation, 8 test and 7 unused. There they carry only legacy pseudo-labels, never the manual reference masks. These 45 scenes are 1.2\% of the 3,647 pre-training scenes and 1.4\% of the pre-training pixels. The Proba-V scenes, including the 49 point-based test scenes, are disjoint from pre-training, fine-tuning and validation.
+\end{flushleft}

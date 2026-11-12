@@ -1,0 +1,52 @@
+\begin{table}[h]
+\centering
+\caption{Paired scene-level comparison of Multi-FT PW-DL3 against the other strategies and the legacy baselines. Each row compares the same scenes: two-sided Wilcoxon signed-rank test, Holm correction within sensor and metric, bootstrap 95\% confidence interval of the median difference, and number of scenes where Multi-FT is better.}
+\label{tab:paired}
+\small
+\setlength{\tabcolsep}{4pt}
+
+\textbf{(a)} Proba-V, 49 point-based scenes, $F_2$.
+\\[2pt]
+\begin{tabular}{lrrrr}
+\toprule
+Comparison & Median $\Delta F_2$ & 95\% CI & Scenes better & $p$ (Holm) \\
+\midrule
+Multi-FT vs.\ pre-training & $+0.027$ & $0.018$ to $0.045$ & 37/49 & $1\times10^{-4}$ \\
+Multi-FT vs.\ Proba-FT     & $0.000$  & $-0.006$ to $0.005$ & 22/49 & $0.74$ \\
+Multi-FT vs.\ SPOT-FT      & $+0.023$ & $0.015$ to $0.036$ & 37/49 & $1\times10^{-4}$ \\
+Multi-FT vs.\ BS2          & $+0.028$ & $0.007$ to $0.041$ & 34/49 & $9\times10^{-4}$ \\
+Multi-FT vs.\ BS1          & $+0.032$ & $0.008$ to $0.058$ & 35/49 & $8\times10^{-3}$ \\
+\bottomrule
+\end{tabular}
+
+\vspace{8pt}
+\textbf{(b)} Proba-V, 49 point-based scenes, comparison against Proba-FT in the three metrics.
+\\[2pt]
+\begin{tabular}{lrrrr}
+\toprule
+Metric & Median difference & 95\% CI & Scenes better & $p$ (Holm) \\
+\midrule
+$F_2$   & $0.000$  & $-0.006$ to $0.005$ & 22/49 & $0.74$ \\
+IoU     & $+0.028$ & $0.000$ to $0.043$ & 30/49 & $2\times10^{-3}$ \\
+Kappa   & $+0.040$ & $0.006$ to $0.072$ & 35/49 & $4\times10^{-4}$ \\
+\bottomrule
+\end{tabular}
+
+\vspace{8pt}
+\textbf{(c)} SPOT-VGT, 8 pixel-wise scenes, $F_2$.
+\\[2pt]
+\begin{tabular}{lrrrr}
+\toprule
+Comparison & Median $\Delta F_2$ & 95\% CI & Scenes better & $p$ (Holm) \\
+\midrule
+Multi-FT vs.\ pre-training & $+0.032$ & $0.003$ to $0.052$ & 7/8 & $0.31$ \\
+Multi-FT vs.\ SPOT-FT      & $+0.004$ & $0.001$ to $0.017$ & 7/8 & $0.31$ \\
+Multi-FT vs.\ Proba-FT     & $+0.006$ & $-0.019$ to $0.033$ & 4/8 & $0.64$ \\
+Multi-FT vs.\ BS2          & $+0.019$ & $-0.001$ to $0.058$ & 6/8 & $0.31$ \\
+Multi-FT vs.\ BS1          & $+0.088$ & $0.040$ to $0.148$ & 7/8 & $0.078$ \\
+\bottomrule
+\end{tabular}
+
+\vspace{6pt}
+\parbox{0.95\textwidth}{\footnotesize With eight scenes the Wilcoxon test has little power: the smallest attainable two-sided $p$-value is $0.0078$, and after Holm correction none of the SPOT-VGT comparisons reaches $0.05$. The intervals and the direction of the differences are reported instead of a significance claim.}
+\end{table}

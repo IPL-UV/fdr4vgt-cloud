@@ -14,6 +14,7 @@ Code, model definitions, training scripts, evaluation tools, and split metadata 
 - `splits/`: train/val/test assignments for the 117 pixel scenes and 49 point scenes, the 3,647 pre-training IDs, and the role-level summary and overlap files.
 - `configs/`: seeds, model definitions and training hyperparameters.
 - `notebooks/01_quickstart.ipynb`: getting-started notebook.
+- `docs/supplementary/`: supplementary tables of the paper (splits, paired tests, transition magnitudes) with the compiled PDF.
 - `hf_model/`: placeholder structure for the Hugging Face model repository.
 
 ## Data availability
