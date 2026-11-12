@@ -1,0 +1,25 @@
+# Artifacts published on isp-uv-es/FDR4VGT-CLOUD.
+# Paths accept environment variables: ${TRAINPROBAV} points at the training tree.
+# Every export uses torch 2.7.0, a dynamic batch from 1 to 256 and a sigmoid
+# inside the graph.
+
+artifacts:
+  - name: multisensor_single_1dpwdeeplabv3
+    kind: single
+    models: [1dpwdeeplabv3]
+    checkpoints:
+      - ${TRAINPROBAV}/train_global_cloud_mask/finetune/checkpoints/ft_1dpwdeeplabv3__2025-10-27-09-09-20__epoch=025-val_loss=0.0611.ckpt
+    output: hf_model/single/multisensor_single_1dpwdeeplabv3.pt2
+
+  - name: multisensor_ensemble
+    kind: ensemble
+    best: 0
+    models: [1dpwdeeplabv3, 1dpwunetpp, 1dpwseg, 1dpwunet, unet, unetpp]
+    checkpoints:
+      - ${TRAINPROBAV}/train_global_cloud_mask/finetune/checkpoints/ft_1dpwdeeplabv3__2025-10-27-09-09-20__epoch=025-val_loss=0.0611.ckpt
+      - ${TRAINPROBAV}/train_global_cloud_mask/finetune/checkpoints/ft_1dpwunetpp__2025-10-27-09-45-39__epoch=022-val_loss=0.0625.ckpt
+      - ${TRAINPROBAV}/train_global_cloud_mask/finetune/checkpoints/ft_1dpwseg__2025-10-27-10-10-41__epoch=023-val_loss=0.0622.ckpt
+      - ${TRAINPROBAV}/train_global_cloud_mask/finetune/checkpoints/ft_1dpwunet__2025-10-27-10-31-37__epoch=028-val_loss=0.0617.ckpt
+      - ${TRAINPROBAV}/train_global_cloud_mask/finetune/checkpoints/ft_unet__2025-10-27-11-08-23__epoch=020-val_loss=0.0606.ckpt
+      - ${TRAINPROBAV}/train_global_cloud_mask/finetune/checkpoints/ft_unetpp__2025-10-27-11-26-07__epoch=005-val_loss=0.0663.ckpt
+    output: hf_model/ensemble/multisensor_ensemble.pt2

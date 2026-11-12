@@ -1,61 +1,107 @@
-"""Export the 24 torch.export `.pt2` artifacts from checkpoints.
+"""Export the `.pt2` artifacts that are published on Hugging Face.
 
-Artifacts (per Opus review):
-  - 2 operational: single (1dpwdeeplabv3) and ensemble (6 members)
-  - 7 f_global
-  - 6 proba
-  - 6 spot
-  - 3 ensemble_global
+The artifacts are built from the training checkpoints with the same code that
+was used for the paper, so the published numbers can be reproduced. Every
+export wraps the logits with a sigmoid and declares a dynamic batch dimension
+from 1 to 256.
 
-Each export wraps logits with a sigmoid and uses dynamic batch [1, 256].
+Usage:
+
+    python pipeline/10_export_pt2.py --manifest configs/export_manifest.yaml
+
+Paths in the manifest may use environment variables, e.g. ``${TRAINPROBAV}``.
 """
 
 from __future__ import annotations
 
 import argparse
+import math
+import os
 from pathlib import Path
 
 import torch
+import yaml
+from torch.export import Dim
 
-from fdr4vgt_cloud.model import CombinedNet4, SigmoidWrap
+from fdr4vgt_cloud.model import SigmoidWrap, get_model
+
+BATCH = Dim("batch", min=1, max=256)
+EXAMPLE = (2, 4, 512, 512)
 
 
-def export_single(ckpt_path: Path, output_path: Path) -> None:
-    ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=True)
-    state = ckpt.get("state_dict", ckpt)
-    state = {k.removeprefix("model."): v for k, v in state.items()}
+class EnsembleProbStd(torch.nn.Module):
+    """Ensemble that returns the probability of one member and its spread.
 
-    model = CombinedNet4(in_channels=4, classes=1, base_channels=32)
+    The probability comes from the first member, which is the operational
+    model. The uncertainty is the standard deviation across all members,
+    normalised by the maximum possible value so that it stays in 0 to 1.
+    """
+
+    def __init__(self, models: list[torch.nn.Module], best: int = 0) -> None:
+        super().__init__()
+        self.models = torch.nn.ModuleList(
+            [torch.nn.Sequential(model, torch.nn.Sigmoid()) for model in models]
+        )
+        self.best = best
+        count = len(models)
+        self.std_max = math.sqrt(0.25 * count / (count - 1)) if count > 1 else 1.0
+
+    def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+        stacked = torch.stack([model(x) for model in self.models], dim=0).squeeze(2)
+        prob = stacked[self.best]
+        if len(self.models) > 1:
+            spread = torch.clamp(stacked.std(dim=0) / self.std_max, 0.0, 1.0)
+        else:
+            spread = torch.zeros_like(prob)
+        return prob.unsqueeze(1), spread.unsqueeze(1)
+
+
+def load_checkpoint(path: Path, name: str) -> torch.nn.Module:
+    """Build one architecture and load its Lightning checkpoint."""
+    state = torch.load(path, map_location="cpu", weights_only=False)["state_dict"]
+    state = {key.removeprefix("model."): value for key, value in state.items()}
+    model = get_model(name)
     model.load_state_dict(state, strict=True)
-    wrapped = SigmoidWrap(model).eval()
+    return model.eval()
 
-    batch = torch.export.Dim("batch", min=1, max=256)
-    ep = torch.export.export(
-        wrapped,
-        (torch.randn(1, 4, 512, 512),),
-        dynamic_shapes={"x": {0: batch}},
+
+def export(model: torch.nn.Module, output: Path) -> None:
+    """Export one inference graph with a dynamic batch dimension."""
+    output.parent.mkdir(parents=True, exist_ok=True)
+    for parameter in model.parameters():
+        parameter.requires_grad = False
+    program = torch.export.export(
+        model,
+        (torch.randn(*EXAMPLE),),
+        dynamic_shapes={"x": {0: BATCH}},
         strict=False,
     )
-    torch.export.save(ep, output_path)
-    print(f"Exported {output_path}")
+    torch.export.save(program, output)
+    print(f"exported {output} ({output.stat().st_size / 1e6:.1f} MB)")
+
+
+def build(item: dict) -> torch.nn.Module:
+    """Turn one manifest entry into the module that gets exported."""
+    checkpoints = [Path(os.path.expandvars(p)) for p in item["checkpoints"]]
+    names = item["models"]
+    if item["kind"] == "single":
+        return SigmoidWrap(load_checkpoint(checkpoints[0], names[0]))
+    models = [load_checkpoint(path, name) for path, name in zip(checkpoints, names, strict=True)]
+    return EnsembleProbStd(models, best=item.get("best", 0)).eval()
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Export .pt2 artifacts")
-    parser.add_argument("--manifest", default="configs/model_manifest.csv")
-    parser.add_argument("--output-dir", default="hf_model")
+    parser.add_argument("--manifest", default="configs/export_manifest.yaml")
+    parser.add_argument("--only", default="", help="Export a single artifact by name")
     args = parser.parse_args()
 
-    output_dir = Path(args.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    manifest = Path(args.manifest)
-    if not manifest.exists():
-        print(f"Manifest not found: {manifest}. Skipping export.")
-        return
-
-    # Implementation iterates the manifest and exports each artifact.
-    print(f"Export target: {output_dir}")
+    manifest = yaml.safe_load(Path(args.manifest).read_text())
+    for item in manifest["artifacts"]:
+        if args.only and item["name"] != args.only:
+            continue
+        print(f"building {item['name']}")
+        export(build(item), Path(item["output"]))
 
 
 if __name__ == "__main__":

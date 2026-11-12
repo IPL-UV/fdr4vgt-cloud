@@ -17,7 +17,14 @@ from torch.nn import functional
 __all__ = [
     "DeepLabV3Branch",
     "PixelWiseNet",
+    "CombinedNet",
+    "CombinedNet2",
+    "CombinedNet3",
     "CombinedNet4",
+    "DeepLabV3Branch",
+    "SegformerBranch",
+    "UNetBranch",
+    "UNetPlusPlusBranch",
     "SigmoidWrap",
     "get_model",
 ]
@@ -37,6 +44,54 @@ class DeepLabV3Branch(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.deeplabv3(x)
+
+
+class SegformerBranch(nn.Module):
+    """SegFormer segmentation branch with MobileNetV2 encoder."""
+
+    def __init__(self, in_channels: int = 4, classes: int = 1) -> None:
+        super().__init__()
+        self.segformer = smp.Segformer(
+            encoder_name="mobilenet_v2",
+            encoder_weights=None,
+            in_channels=in_channels,
+            classes=classes,
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.segformer(x)
+
+
+class UNetBranch(nn.Module):
+    """UNet segmentation branch with MobileNetV2 encoder."""
+
+    def __init__(self, in_channels: int = 4, classes: int = 1) -> None:
+        super().__init__()
+        self.unet = smp.Unet(
+            encoder_name="mobilenet_v2",
+            encoder_weights=None,
+            in_channels=in_channels,
+            classes=classes,
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.unet(x)
+
+
+class UNetPlusPlusBranch(nn.Module):
+    """UNet++ segmentation branch with MobileNetV2 encoder."""
+
+    def __init__(self, in_channels: int = 4, classes: int = 1) -> None:
+        super().__init__()
+        self.unet_pp = smp.UnetPlusPlus(
+            encoder_name="mobilenet_v2",
+            encoder_weights=None,
+            in_channels=in_channels,
+            classes=classes,
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.unet_pp(x)
 
 
 class PixelWiseNet(nn.Module):
@@ -90,6 +145,57 @@ class CombinedNet4(nn.Module):
         return self.fusion_conv(fused)
 
 
+class CombinedNet(nn.Module):
+    """SegFormer + pixel-wise MLP. Shorthand ``1dpwseg``."""
+
+    def __init__(self, in_channels: int = 4, classes: int = 1, base_channels: int = 32) -> None:
+        super().__init__()
+        self.seg_branch = SegformerBranch(in_channels=in_channels, classes=classes)
+        self.pixel_branch = PixelWiseNet(
+            in_channels=in_channels,
+            out_channels=classes,
+            base_channels=base_channels,
+        )
+        self.fusion_conv = nn.Conv2d(classes, classes, kernel_size=1, bias=False)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.fusion_conv(self.seg_branch(x) + self.pixel_branch(x))
+
+
+class CombinedNet2(nn.Module):
+    """UNet + pixel-wise MLP. Shorthand ``1dpwunet``."""
+
+    def __init__(self, in_channels: int = 4, classes: int = 1, base_channels: int = 32) -> None:
+        super().__init__()
+        self.seg_branch = UNetBranch(in_channels=in_channels, classes=classes)
+        self.pixel_branch = PixelWiseNet(
+            in_channels=in_channels,
+            out_channels=classes,
+            base_channels=base_channels,
+        )
+        self.fusion_conv = nn.Conv2d(classes, classes, kernel_size=1, bias=False)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.fusion_conv(self.seg_branch(x) + self.pixel_branch(x))
+
+
+class CombinedNet3(nn.Module):
+    """UNet++ + pixel-wise MLP. Shorthand ``1dpwunetpp``."""
+
+    def __init__(self, in_channels: int = 4, classes: int = 1, base_channels: int = 32) -> None:
+        super().__init__()
+        self.seg_branch = UNetPlusPlusBranch(in_channels=in_channels, classes=classes)
+        self.pixel_branch = PixelWiseNet(
+            in_channels=in_channels,
+            out_channels=classes,
+            base_channels=base_channels,
+        )
+        self.fusion_conv = nn.Conv2d(classes, classes, kernel_size=1, bias=False)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.fusion_conv(self.seg_branch(x) + self.pixel_branch(x))
+
+
 class SigmoidWrap(nn.Module):
     """Wrap a logit model so the exported artifact emits probabilities."""
 
@@ -115,28 +221,19 @@ def get_model(name: str = "1dpwdeeplabv3", **kwargs) -> nn.Module:
 
     single = {
         "deeplabv3": DeepLabV3Branch,
-        "unet": lambda **kw: smp.Unet(
-            encoder_name="mobilenet_v2",
-            encoder_weights=None,
-            in_channels=kw.get("in_channels", 4),
-            classes=kw.get("classes", 1),
-        ),
-        "unetpp": lambda **kw: smp.UnetPlusPlus(
-            encoder_name="mobilenet_v2",
-            encoder_weights=None,
-            in_channels=kw.get("in_channels", 4),
-            classes=kw.get("classes", 1),
-        ),
-        "segformer": lambda **kw: smp.Segformer(
-            encoder_name="mobilenet_v2",
-            encoder_weights=None,
-            in_channels=kw.get("in_channels", 4),
-            classes=kw.get("classes", 1),
-        ),
+        "unet": UNetBranch,
+        "unetpp": UNetPlusPlusBranch,
+        "segformer": SegformerBranch,
     }
 
     if name == "1dpwdeeplabv3":
         return CombinedNet4(in_channels=in_channels, classes=classes)
+    if name == "1dpwseg":
+        return CombinedNet(in_channels=in_channels, classes=classes)
+    if name == "1dpwunet":
+        return CombinedNet2(in_channels=in_channels, classes=classes)
+    if name == "1dpwunetpp":
+        return CombinedNet3(in_channels=in_channels, classes=classes)
     if name in single:
         return single[name](in_channels=in_channels, classes=classes)
     raise ValueError(f"Unknown model name: {name}")
