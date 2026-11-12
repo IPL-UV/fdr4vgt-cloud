@@ -18,6 +18,9 @@
 | `14_upload_dataset.py` | Dry-run upload of the TACO dataset to Hugging Face. |
 | `15_upload_model.py` | Dry-run upload of the model artifacts to Hugging Face. |
 | `16_verify_remote.py` | Verify the published dataset and model over the network. |
+| `17_check_split_overlap.py` | Check that no test scene appears in fine-tuning. |
+| `18_split_geo_separation.py` | Distance between training and test scene centroids. |
+| `19_mask_uncertainty.py` | Rescore a model against four versions of the reference mask. |
 
 Run the modules in order. Steps 04-05 and 10-11 require the large source
 files under `/data` and are skipped by the public CI.

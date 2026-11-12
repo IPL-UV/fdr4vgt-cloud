@@ -14,7 +14,11 @@ Code, model definitions, training scripts, evaluation tools, and split metadata 
 - `splits/`: train/val/test assignments for the 117 pixel scenes and 49 point scenes, the 3,647 pre-training IDs, and the role-level summary and overlap files.
 - `configs/`: seeds, model definitions and training hyperparameters.
 - `notebooks/01_quickstart.ipynb`: getting-started notebook.
-- `docs/supplementary/`: supplementary tables of the paper (splits, paired tests, transition magnitudes) with the compiled PDF.
+- `docs/supplementary/`: supplementary tables of the paper (splits, paired tests, transition
+  magnitudes) with the compiled PDF. `r3_2_mask_uncertainty.csv` holds the per-scene and
+  per-variant scores behind the mask-uncertainty and seed-variability replies: rows are
+  identified by `model`, where `seed1` and `seed2` are two repeated fine-tunes of the
+  operational model with a different random seed and everything else fixed.
 - `hf_model/`: placeholder structure for the Hugging Face model repository.
 
 ## Data availability
