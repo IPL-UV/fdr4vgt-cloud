@@ -50,5 +50,6 @@ Thumbs.db
 *.parquet
 *.csv
 !splits/*.csv
+!docs/supplementary/*.csv
 !configs/*.yaml
 !configs/*.yml
