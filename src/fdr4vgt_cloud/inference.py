@@ -20,14 +20,30 @@ __all__ = ["predict_large", "load_pt2", "apply_model"]
 
 
 def load_pt2(path: str | pathlib.Path, device: str = "cpu") -> nn.Module:
-    """Load a torch.export serialized model and return an executable module."""
+    """Load a torch.export serialized model and return an executable module.
+
+    ``ExportedProgram.module()`` returns an unlifted GraphModule whose
+    ``eval()`` and ``train()`` raise ``NotImplementedError``, so the module is
+    only moved to ``device`` here. It has no trainable state: the exported graph
+    is inference-only and callers already wrap the forward in ``torch.no_grad()``.
+    """
     path = pathlib.Path(path)
     if not path.exists():
         raise FileNotFoundError(path)
-    exported = torch.export.load(str(path))
+    try:
+        exported = torch.export.load(str(path))
+    except RuntimeError as error:
+        if "schema version" not in str(error):
+            raise
+        raise RuntimeError(
+            f"{path.name} was exported with another torch version and cannot be "
+            "read by torch.export in this environment. The operational single "
+            "model is exported with torch 2.7; the ablation artifacts with torch "
+            "2.5.1. Install the matching torch or re-export the artifact with "
+            "pipeline/10_export_pt2.py."
+        ) from error
     model = exported.module()
     model.to(device)
-    model.eval()
     return model
 
 
@@ -133,7 +149,6 @@ def predict_large(
     window = _hann2((patch_size, patch_size))
 
     model.to(device)
-    model.eval()
 
     with rio.open(image_path) as src:
         for row, col in _tile_offsets(height, width, patch_size, overlap):

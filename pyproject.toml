@@ -85,4 +85,4 @@ quote-style = "double"
 indent-style = "space"
 
 [tool.pytest.ini_options]
-testpaths = ["local_tests"]
+testpaths = ["tests"]
