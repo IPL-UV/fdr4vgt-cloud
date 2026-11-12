@@ -13,12 +13,25 @@ This is **DeepLabV3**, not DeepLabV3+.
 
 ## Exported artifacts
 
-The model repository contains 23 `.pt2` files and 28 JSON files:
+The model repository holds 24 `.pt2` files and 29 JSON files:
 
-- `single/model.pt2`: operational single model.
-- `ablation/`: 22 additional models for the ablation study.
+- `single/multisensor_single_1dpwdeeplabv3.pt2`: operational single model.
+- `ensemble/multisensor_ensemble.pt2`: six-member ensemble that returns a
+  probability and a per-pixel uncertainty.
+- `single/f_global_*`, `single/proba_*`, `single/spot_*`: the ablation models.
 
-All exports use torch 2.7.0, dynamic batch size from 1 to 256, and include the sigmoid.
+The operational single model and the ensemble were exported with torch 2.7.0.
+The ablation models were exported with torch 2.5.1. `torch.export` refuses to
+load a file written by a different torch version, so each group needs its own
+environment.
+
+All exports use a dynamic batch size from 1 to 256 and include the sigmoid.
+Each `.pt2` is rebuilt from its training checkpoint with
+`pipeline/10_export_pt2.py` and `configs/export_manifest.yaml`.
+
+The `load.py` published next to the artifacts is the copy in
+`notebooks/fdr4vgt_model/load.py`. It is the module that mlstac imports to run
+`compiled_model` and `predict_large`.
 
 ## Threshold
 
@@ -37,19 +50,25 @@ the default.
 
 ## Compatibility
 
-Exports are tested with:
-
-- torch 2.7.0 (build environment)
-- torch 2.14.1 CPU (forward compatibility)
+- Operational single model and ensemble: torch 2.7.0.
+- Ablation models: torch 2.5.1.
+- The exported graph takes 512 x 512 tiles. Smaller crops are padded to 512 and
+  cropped back by the published loader.
 
 ## Inference
 
-Use `mlstac>=0.4.9` and point it to the JSON file:
+Use `mlstac==0.4.9` and point it to the JSON file:
 
 ```python
 import mlstac
-loader = mlstac.load("https://huggingface.co/isp-uv-es/FDR4VGT-CLOUD/resolve/main/single/mlm.json")
-model = loader.compiled_model(device="cpu")
+url = "https://huggingface.co/isp-uv-es/FDR4VGT-CLOUD/resolve/main/single/multisensor_single_1dpwdeeplabv3.json"
+model = mlstac.load(url).download("fdr4vgt_model").compiled_model(device="cpu")
+```
+
+To check the published artifacts end to end:
+
+```bash
+python pipeline/11_verify_pt2.py
 ```
 
 ## License

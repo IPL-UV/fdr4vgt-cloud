@@ -36,7 +36,7 @@ The split files in `splits/` list the product IDs needed to rebuild each set.
 Install the inference dependencies:
 
 ```bash
-pip install mlstac==0.4.9 rasterio "torch>=2.7.0" "segmentation-models-pytorch>=0.5.0"
+pip install mlstac==0.4.9 rasterio safetensors "torch==2.7.0" "segmentation-models-pytorch>=0.5.0"
 ```
 
 Run inference on the public Proba-V sample hosted on Hugging Face:
@@ -73,6 +73,16 @@ with torch.no_grad():
     prob = model(image_t)
 
 print(prob.shape)  # (1, 1, 512, 512)
+```
+
+`torch.export` refuses to load a file written by another torch version, so the
+install line pins the version used for the export. The repositories also publish
+a ready 512 x 512 patch as `single/example_data.safetensor`, read with
+`safetensors.numpy.load_file(...)["image"]`, which avoids downloading the full
+scene. To check the published artifacts end to end:
+
+```bash
+python pipeline/11_verify_pt2.py
 ```
 
 For a step-by-step version see:

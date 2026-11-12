@@ -1,0 +1,185 @@
+{
+  "type": "Feature",
+  "stac_version": "1.1.0",
+  "id": "multisensor_ensemble",
+  "properties": {
+    "datetime": "2025-10-27T11:30:27.245518Z",
+    "title": "DeepLabV3 Ensemble Cloud Detection Model",
+    "description": "Cloud probability plus a per-pixel uncertainty from a 6-member DeepLabV3 ensemble. The probability comes from the first member and the uncertainty is the normalised standard deviation across the 6 members.",
+    "mlm:name": "multisensor_ensemble",
+    "mlm:framework": "pytorch",
+    "mlm:framework_version": "2.7.0",
+    "mlm:architecture": "DeepLabV3 + PixelWise MLP ensemble (6 members)",
+    "mlm:total_parameters": 42486538,
+    "mlm:tasks": [
+      "semantic-segmentation"
+    ],
+    "mlm:hyperparameters": {
+      "batch_size": "Dynamic (1-256)",
+      "learning_rate": 0.0001,
+      "training_epochs": 25,
+      "final_val_loss": 0.0611
+    },
+    "custom:sensors": [
+      "VGT-1",
+      "VGT-2",
+      "PROBA-V"
+    ],
+    "custom:spatial_resolution": "1 km",
+    "custom:project": "FDR4VGT Cloud Masking",
+    "custom:project_url": "https://huggingface.co/isp-uv-es/FDR4VGT-CLOUD",
+    "custom:dynamic_batch": true,
+    "custom:batch_range": [
+      1,
+      256
+    ],
+    "file:size": 185584962,
+    "mlm:input": [
+      {
+        "name": "Reflectance",
+        "bands": [
+          "Blue",
+          "Red",
+          "NIR",
+          "SWIR"
+        ],
+        "input": {
+          "shape": [
+            -1,
+            4,
+            512,
+            512
+          ],
+          "dim_order": [
+            "batch",
+            "bands",
+            "height",
+            "width"
+          ],
+          "data_type": "float32"
+        },
+        "description": "Top-of-atmosphere reflectance, unscaled physical values (not DN), nominal range 0 to 2.05.",
+        "value_scaling": null
+      }
+    ],
+    "mlm:output": [
+      {
+        "name": "probability",
+        "description": "Cloud probability from the first ensemble member. The sigmoid is inside the exported graph.",
+        "recommended_threshold": 0.5,
+        "standard_threshold": 0.5,
+        "result": {
+          "shape": [
+            -1,
+            1,
+            512,
+            512
+          ],
+          "data_type": "float32",
+          "dim_order": [
+            "batch",
+            "channel",
+            "height",
+            "width"
+          ]
+        },
+        "tasks": [
+          "semantic-segmentation"
+        ]
+      },
+      {
+        "name": "uncertainty",
+        "description": "Normalised standard deviation across the 6 members, clipped to 0 to 1.",
+        "result": {
+          "shape": [
+            -1,
+            1,
+            512,
+            512
+          ],
+          "data_type": "float32",
+          "dim_order": [
+            "batch",
+            "channel",
+            "height",
+            "width"
+          ]
+        },
+        "tasks": [
+          "semantic-segmentation"
+        ],
+        "recommended_threshold": 0.5,
+        "standard_threshold": 0.5
+      }
+    ],
+    "updated": "2026-11-12T15:11:50Z",
+    "mlm:memory_size": 278388207,
+    "custom:training_dataset": "FDR4VGT harmonized SPOT-VGT and Proba-V archive. Fine-tuning used 78 hand-annotated scenes (66 train / 12 validation). 31 held-out scenes were never used in training. The test set has 81 scenes: 24 Proba-V pixel scenes, 8 SPOT-VGT pixel scenes and 49 Proba-V scenes annotated with points.",
+    "dependencies": [
+      "torch>=2.7.0"
+    ]
+  },
+  "assets": {
+    "model": {
+      "href": "https://huggingface.co/isp-uv-es/FDR4VGT-CLOUD/resolve/main/ensemble/multisensor_ensemble.pt2",
+      "type": "application/octet-stream",
+      "roles": [
+        "mlm:model"
+      ],
+      "title": "PyTorch model weights (torch 2.5.1 export)",
+      "mlm:artifact_type": "torch.export.save",
+      "raster:bands": [
+        {
+          "name": "Blue",
+          "description": "Blue, around 450 nm",
+          "data_type": "float32"
+        },
+        {
+          "name": "Red",
+          "description": "Red, around 645 nm",
+          "data_type": "float32"
+        },
+        {
+          "name": "NIR",
+          "description": "Near infrared, around 835 nm",
+          "data_type": "float32"
+        },
+        {
+          "name": "SWIR",
+          "description": "Short-wave infrared, around 1665 nm",
+          "data_type": "float32"
+        }
+      ]
+    },
+    "load": {
+      "href": "https://huggingface.co/isp-uv-es/FDR4VGT-CLOUD/resolve/main/ensemble/load.py",
+      "type": "application/x-python-code",
+      "roles": [
+        "code"
+      ]
+    },
+    "example_data": {
+      "href": "https://huggingface.co/isp-uv-es/FDR4VGT-CLOUD/resolve/main/ensemble/example_data.safetensor",
+      "type": "application/octet-stream; application=safetensors",
+      "title": "Example Proba-V image",
+      "description": "4-band Proba-V reflectance patch (Blue, Red, NIR, SWIR), 512 x 512, stored under the key 'image'. It goes straight into the model.",
+      "roles": [
+        "mlm:example_data",
+        "data"
+      ]
+    }
+  },
+  "links": [
+    {
+      "rel": "license",
+      "href": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "type": "text/html",
+      "title": "CC0-1.0 License"
+    }
+  ],
+  "stac_extensions": [
+    "https://stac-extensions.github.io/mlm/v1.5.0/schema.json",
+    "https://stac-extensions.github.io/file/v2.1.0/schema.json",
+    "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
+  ]
+}
