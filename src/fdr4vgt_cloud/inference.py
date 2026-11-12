@@ -78,7 +78,7 @@ def predict_large(
     patch_size: int = 512,
     overlap: int = 128,
     device: str = "cpu",
-    dtype: np.dtype = np.float32,
+    dtype: np.dtype | type = np.float32,
 ) -> pathlib.Path:
     """Predict a full image using overlapping tiles and Hann-squared blending.
 
@@ -118,7 +118,7 @@ def predict_large(
     out_meta.update(
         {
             "count": 1,
-            "dtype": dtype.name,
+            "dtype": np.dtype(dtype).name,
             "compress": "deflate",
             "tiled": True,
             "blockxsize": 512,
